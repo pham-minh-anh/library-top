@@ -15,6 +15,10 @@ Book.prototype.info = function() {
     return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read ? "read" : "not read yet"}`
 };
 
+Book.prototype.toggleRead = function() {
+    this.read = !this.read;
+}
+
 function addBookToLibrary(title, author, pages, read) {
     const newBook = new Book(title, author, pages, read);
     myLibrary.push(newBook);
@@ -25,10 +29,34 @@ function displayBooks() {
     for (let book of myLibrary) {
         const row = document.createElement("tr");
         for (let property in book) {
-            if (typeof book[property] === "function" || property === "id") continue;
-            const cell = document.createElement("td");
-            cell.textContent = book[property];
-            row.appendChild(cell);
+            if (typeof book[property] === "function" || property === "id") {}
+            else if (property ==="read") {
+                const readButton = document.createElement("button")
+                readButton.className = "read";
+                if(book.read) {
+                    readButton.textContent = "read";
+                } else {
+                    readButton.textContent = "notread";
+                }
+                readButton.setAttribute("data-index-number", book.id)
+                row.appendChild(readButton)
+
+                readButton.addEventListener("click", function(event) {
+                    const target = event.target;
+                    const id = target.dataset.indexNumber;
+                    const targetBook = myLibrary.find(book => book.id === id);
+                    targetBook.toggleRead();
+
+                    clearTable();
+                displayBooks();
+
+                })
+            }
+            else {
+                const cell = document.createElement("td");
+                cell.textContent = book[property];
+                row.appendChild(cell);
+            }
         }
 
         const removeButton = document.createElement("button")
@@ -38,15 +66,15 @@ function displayBooks() {
         row.appendChild(removeButton)
 
         removeButton.addEventListener("click", function(event) {
-        const target = event.target;
-        const id = target.dataset.indexNumber;
-        const index = myLibrary.findIndex(book => book.id === id);
-        
-        myLibrary.splice(index, 1);
+            const target = event.target;
+            const id = target.dataset.indexNumber;
+            const index = myLibrary.findIndex(book => book.id === id);
+            
+            myLibrary.splice(index, 1);
 
-        clearTable();
-        displayBooks();
-    })
+            clearTable();
+            displayBooks();
+        })
 
         table.appendChild(row);
     }
