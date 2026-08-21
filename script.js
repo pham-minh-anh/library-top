@@ -88,6 +88,7 @@ class Book {
     }
 }
 
+// Starter data
 Book.addBookToLibrary("Haha", "Mem", 300, true);
 Book.addBookToLibrary("Hihi", "Hoho", 400, false);
 
@@ -108,18 +109,32 @@ submitButton.addEventListener("click", function(event) {
     const author = document.querySelector("#author");
     const pages = document.querySelector("#pages");
     const read = document.querySelector("#read");
+    const errorMessage = document.getElementById("error_message");
 
-    Book.addBookToLibrary(name.value, author.value, pages.value, read.checked);
+    // clear any previous errors first
+    name.setCustomValidity("");
+    author.setCustomValidity("");
 
-    name.value = "";
-    author.value = "";
-    pages.value = "";
-    read.checked = false;
+    if (!name.value.trim()) {
+        name.setCustomValidity("The book name must be filled!");
+        name.reportValidity()
+    } else if (!author.value.trim()) {
+        author.setCustomValidity("The author name must be filled!");
+        author.reportValidity()
+    } else {
+        Book.addBookToLibrary(name.value, author.value, pages.value, read.checked);
 
-    dialog.close();
-    
-    Book.clearTable();
-    Book.displayBooks();
+        name.value = "";
+        author.value = "";
+        pages.value = "";
+        read.checked = false;
+        errorMessage.textContent = "";
+
+        dialog.close();
+        
+        Book.clearTable();
+        Book.displayBooks();
+    }
 })
 
 const removeButtons = document.querySelectorAll(".remove");
